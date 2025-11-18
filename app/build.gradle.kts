@@ -40,7 +40,11 @@ android {
 }
 
 dependencies {
-
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
+    implementation(libs.androidx.ui)
+    implementation(libs.koin.androidx.compose)
+    implementation(libs.koin.androidx.viewmodel)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
