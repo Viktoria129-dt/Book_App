@@ -7,16 +7,26 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import com.example.bookapp.R
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.bookapp.domain.Book
 import com.example.bookapp.presentation.BookList.components.BookSearchBar
 import com.example.bookapp.ui.theme.DarkBlue
+import com.example.bookapp.ui.theme.DesertWhite
+import com.example.bookapp.ui.theme.Sandyellow
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -61,5 +71,61 @@ fun BookListScreen(state: BookListState, onAction: (BookListAction) -> Unit) {
                 .padding(16.dp)
                 .widthIn(max = 400.dp)
         )
+        Surface(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+            color = DesertWhite,
+            shape = RoundedCornerShape(
+                topStart = 32.dp,
+                topEnd = 32.dp
+            )
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                TabRow(
+                    selectedTabIndex = state.selectedTabIndex,
+                    modifier = Modifier
+                        .padding(vertical = 12.dp)
+                        .fillMaxWidth(),
+                    contentColor = DesertWhite
+                ) {
+                    Tab(
+                        selected = state.selectedTabIndex == 0,
+                        onClick = {
+                            onAction(BookListAction.OnTabSelected(0))
+                        },
+                        modifier = Modifier
+                            .weight(1f),
+                        selectedContentColor = Sandyellow,
+                        unselectedContentColor = Color.Black.copy(alpha = 0.5f)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.search_results),
+                            modifier = Modifier
+                                .padding(vertical = 12.dp)
+                        )
+                    }
+
+                    Tab(
+                        selected = state.selectedTabIndex == 1,
+                        onClick = {
+                            onAction(BookListAction.OnTabSelected(1))
+                        },
+                        modifier = Modifier
+                            .weight(1f),
+                        selectedContentColor = Sandyellow,
+                        unselectedContentColor = Color.Black.copy(alpha = 0.5f)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.favourites),
+                            modifier = Modifier
+                                .padding(vertical = 12.dp)
+                        )
+                    }
+                }
+            }
+        }
     }
 }
