@@ -2,27 +2,40 @@ package com.example.bookapp.presentation.BookList
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import com.example.bookapp.R
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.bookapp.domain.Book
+import com.example.bookapp.presentation.BookList.components.BookList
 import com.example.bookapp.presentation.BookList.components.BookSearchBar
 import com.example.bookapp.ui.theme.DarkBlue
 import com.example.bookapp.ui.theme.DesertWhite
@@ -51,6 +64,11 @@ fun BookListScreenRoot(
 @Composable
 fun BookListScreen(state: BookListState, onAction: (BookListAction) -> Unit) {
     val keyboardController = LocalSoftwareKeyboardController.current
+    val pagerState = rememberPagerState { 2 }
+    val resultsBookScrollState = rememberLazyListState()
+    LaunchedEffect(state.searchResults) {
+        resultsBookScrollState.animateScrollToItem(0)
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -89,7 +107,14 @@ fun BookListScreen(state: BookListState, onAction: (BookListAction) -> Unit) {
                     modifier = Modifier
                         .padding(vertical = 12.dp)
                         .fillMaxWidth(),
-                    contentColor = DesertWhite
+                    contentColor = DesertWhite,
+                    indicator = { tabPositions ->
+                        TabRowDefaults.SecondaryIndicator(
+                            color = Sandyellow,
+                            modifier = Modifier
+                                .tabIndicatorOffset(currentTabPosition = tabPositions[state.selectedTabIndex] )
+                        )
+                    }
                 ) {
                     Tab(
                         selected = state.selectedTabIndex == 0,
@@ -123,6 +148,61 @@ fun BookListScreen(state: BookListState, onAction: (BookListAction) -> Unit) {
                             modifier = Modifier
                                 .padding(vertical = 12.dp)
                         )
+                    }
+                    Spacer(
+                        modifier = Modifier
+                            .height(4.dp)
+                    )
+                    HorizontalPager(
+                        state = pagerState,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    ) { pageIndex ->
+                        when(pageIndex){
+                            0 -> {
+                                if (state.isLoading){
+                                    CircularProgressIndicator()
+                                }
+                                else{
+                                    when{
+                                        state.errorMessage!=null ->{
+                                            Text(
+                                                text = state.errorMessage.asString(),
+                                                textAlign = TextAlign.Center,
+                                                color = MaterialTheme.colorScheme.error,
+                                                style = MaterialTheme.typography.headlineSmall
+                                            )
+                                        }
+                                        state.searchResults.isEmpty() ->{
+                                            Text(
+                                                text = stringResource(R.string.error_no_results),
+                                                textAlign = TextAlign.Center,
+                                                color = MaterialTheme.colorScheme.error,
+                                                style = MaterialTheme.typography.headlineSmall
+                                            )
+                                        }
+                                        else -> {
+                                            BookList(
+                                                books = state.searchResults,
+                                                onBookClick = {
+                                                    onAction(BookListAction.OnBookClick(it))
+                                                },
+                                                scrollState = resultsBookScrollState,
+                                                modifier = Modifier
+                                                    .fillMaxSize()
+                                            )
+                                        }
+                                    }
+
+                                }
+
+                            }
+                            1 -> {
+
+                            }
+                        }
+
                     }
                 }
             }

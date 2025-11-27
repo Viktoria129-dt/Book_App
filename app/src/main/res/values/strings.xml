@@ -4,4 +4,5 @@
     <string name="clear_hint">Clear search</string>
     <string name="search_results">Search results</string>
     <string name="favourites">Favorites</string>
+    <string name="error_no_results">Ooops, there are not any books for you</string>
 </resources>

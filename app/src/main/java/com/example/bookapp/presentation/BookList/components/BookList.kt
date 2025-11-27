@@ -1,5 +1,6 @@
 package com.example.bookapp.presentation.BookList.components
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -13,13 +14,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.bookapp.domain.Book
-import com.example.bookapp.presentation.BookList.BookListAction
 
 @Composable
 fun BookList(
     books: List<Book>,
     modifier: Modifier,
-    onBookClick: BookListAction.OnBookClick,
+    onBookClick: (Book) -> Unit,
     scrollState: LazyListState = rememberLazyListState()
 ){
     LazyColumn(
@@ -38,7 +38,9 @@ fun BookList(
                     .widthIn(max = 700.dp)
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
-                onClick = {}
+                onClick = {
+                    onBookClick(book)
+                }
             )
         }
     }
