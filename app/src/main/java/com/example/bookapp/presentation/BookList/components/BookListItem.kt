@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
@@ -25,6 +26,8 @@ import coil.compose.rememberAsyncImagePainter
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -40,7 +43,6 @@ fun BookListItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-
     Surface(
         modifier = modifier.clickable(onClick = onClick),
         shape = RoundedCornerShape(32.dp),
@@ -50,64 +52,77 @@ fun BookListItem(
             modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth()
-                .height(IntrinsicSize.Min)
-        ){
+                .height(IntrinsicSize.Min),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Обложка книги
             Box(
                 modifier = Modifier
-                    .height(100.dp),
+                    .height(100.dp)
+                    .width(70.dp), // Добавьте фиксированную ширину для обложки
                 contentAlignment = Alignment.Center
             ) {
                 val painter = rememberAsyncImagePainter(
                     model = book.imageUrl
                 )
-
                 Image(
                     painter = painter,
                     contentDescription = "Book cover",
-                    modifier = Modifier.height(80.dp)
-                )
-                Column(
                     modifier = Modifier
-                        .fillMaxHeight(),
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = book.title,
-                        style = MaterialTheme.typography.titleMedium,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
-                    )
-
-                    if(book.authors.isNotEmpty()){
-                        Text(
-                            text = book.authors[0],
-                            style = MaterialTheme.typography.bodyLarge,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-
-                    if (book.averageRating!=null){
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = String.format("%.1f", book.averageRating),
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                            Icon(
-                                imageVector = Icons.Default.Star,
-                                contentDescription = "Рейтинг",
-                                tint = Sandyellow
-                            )
-                        }
-                    }
-                }
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(36.dp)
+                        .height(80.dp)
+                        .fillMaxWidth(),
+                    contentScale = ContentScale.Fit
                 )
             }
+
+            // Информация о книге
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = book.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                if(book.authors.isNotEmpty()) {
+                    Text(
+                        text = book.authors[0],
+                        style = MaterialTheme.typography.bodyLarge,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+
+                if (book.averageRating != null) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = String.format("%.1f", book.averageRating),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = "Рейтинг",
+                            tint = Sandyellow,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
+            }
+
+            // Иконка стрелки (теперь она будет справа)
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = null,
+                modifier = Modifier.size(24.dp),
+                tint = Color.Gray
+            )
         }
     }
 }

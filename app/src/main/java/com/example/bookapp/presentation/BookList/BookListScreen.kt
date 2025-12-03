@@ -29,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -63,19 +64,41 @@ fun BookListScreenRoot(
 
 @Composable
 fun BookListScreen(state: BookListState, onAction: (BookListAction) -> Unit) {
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val pagerState = rememberPagerState { 2 }
+    val keyboardController = if (LocalInspectionMode.current) {
+        null
+    } else {
+        LocalSoftwareKeyboardController.current
+    }
+
+    val pagerState = rememberPagerState(initialPage = state.selectedTabIndex) { 2 }
     val resultsBookScrollState = rememberLazyListState()
+    val favouriteBookScrollState = rememberLazyListState()
+
+    // Синхронизация pagerState с selectedTabIndex
+    LaunchedEffect(state.selectedTabIndex) {
+        if (pagerState.currentPage != state.selectedTabIndex) {
+            pagerState.animateScrollToPage(state.selectedTabIndex)
+        }
+    }
+
+    // Обратное обновление - когда пользователь листает pager
+    LaunchedEffect(pagerState.currentPage) {
+        if (pagerState.currentPage != state.selectedTabIndex) {
+            onAction(BookListAction.OnTabSelected(pagerState.currentPage))
+        }
+    }
+
     LaunchedEffect(state.searchResults) {
         resultsBookScrollState.animateScrollToItem(0)
     }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(DarkBlue)
             .statusBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally
-    ){
+    ) {
         BookSearchBar(
             searchQuery = state.searchQuery,
             OnSearchQueryChange = {
@@ -103,7 +126,7 @@ fun BookListScreen(state: BookListState, onAction: (BookListAction) -> Unit) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 TabRow(
-                    selectedTabIndex = state.selectedTabIndex,
+                    selectedTabIndex = pagerState.currentPage, // Используем currentPage из pagerState
                     modifier = Modifier
                         .padding(vertical = 12.dp)
                         .fillMaxWidth(),
@@ -112,12 +135,12 @@ fun BookListScreen(state: BookListState, onAction: (BookListAction) -> Unit) {
                         TabRowDefaults.SecondaryIndicator(
                             color = Sandyellow,
                             modifier = Modifier
-                                .tabIndicatorOffset(currentTabPosition = tabPositions[state.selectedTabIndex] )
+                                .tabIndicatorOffset(currentTabPosition = tabPositions[pagerState.currentPage])
                         )
                     }
                 ) {
                     Tab(
-                        selected = state.selectedTabIndex == 0,
+                        selected = pagerState.currentPage == 0,
                         onClick = {
                             onAction(BookListAction.OnTabSelected(0))
                         },
@@ -127,14 +150,14 @@ fun BookListScreen(state: BookListState, onAction: (BookListAction) -> Unit) {
                         unselectedContentColor = Color.Black.copy(alpha = 0.5f)
                     ) {
                         Text(
-                            text = stringResource(R.string.search_results),
+                            text = if (LocalInspectionMode.current) "Search Results" else stringResource(R.string.search_results),
                             modifier = Modifier
                                 .padding(vertical = 12.dp)
                         )
                     }
 
                     Tab(
-                        selected = state.selectedTabIndex == 1,
+                        selected = pagerState.currentPage == 1,
                         onClick = {
                             onAction(BookListAction.OnTabSelected(1))
                         },
@@ -144,65 +167,77 @@ fun BookListScreen(state: BookListState, onAction: (BookListAction) -> Unit) {
                         unselectedContentColor = Color.Black.copy(alpha = 0.5f)
                     ) {
                         Text(
-                            text = stringResource(R.string.favourites),
+                            text = if (LocalInspectionMode.current) "Favourites" else stringResource(R.string.favourites),
                             modifier = Modifier
                                 .padding(vertical = 12.dp)
                         )
                     }
-                    Spacer(
-                        modifier = Modifier
-                            .height(4.dp)
-                    )
-                    HorizontalPager(
-                        state = pagerState,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                    ) { pageIndex ->
-                        when(pageIndex){
-                            0 -> {
-                                if (state.isLoading){
-                                    CircularProgressIndicator()
-                                }
-                                else{
-                                    when{
-                                        state.errorMessage!=null ->{
-                                            Text(
-                                                text = state.errorMessage.asString(),
-                                                textAlign = TextAlign.Center,
-                                                color = MaterialTheme.colorScheme.error,
-                                                style = MaterialTheme.typography.headlineSmall
-                                            )
-                                        }
-                                        state.searchResults.isEmpty() ->{
-                                            Text(
-                                                text = stringResource(R.string.error_no_results),
-                                                textAlign = TextAlign.Center,
-                                                color = MaterialTheme.colorScheme.error,
-                                                style = MaterialTheme.typography.headlineSmall
-                                            )
-                                        }
-                                        else -> {
-                                            BookList(
-                                                books = state.searchResults,
-                                                onBookClick = {
-                                                    onAction(BookListAction.OnBookClick(it))
-                                                },
-                                                scrollState = resultsBookScrollState,
-                                                modifier = Modifier
-                                                    .fillMaxSize()
-                                            )
-                                        }
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                HorizontalPager(
+                    state = pagerState,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                ) { pageIndex ->
+                    when(pageIndex) {
+                        0 -> {
+                            if (state.isLoading) {
+                                CircularProgressIndicator()
+                            } else {
+                                when {
+                                    state.errorMessage != null -> {
+                                        Text(
+                                            text = if (LocalInspectionMode.current) "Error message" else state.errorMessage.asString(),
+                                            textAlign = TextAlign.Center,
+                                            color = MaterialTheme.colorScheme.error,
+                                            style = MaterialTheme.typography.headlineSmall
+                                        )
                                     }
-
+                                    state.searchResults.isEmpty() -> {
+                                        Text(
+                                            text = if (LocalInspectionMode.current) "No results found" else stringResource(R.string.error_no_results),
+                                            textAlign = TextAlign.Center,
+                                            color = MaterialTheme.colorScheme.error,
+                                            style = MaterialTheme.typography.headlineSmall
+                                        )
+                                    }
+                                    else -> {
+                                        BookList(
+                                            books = state.searchResults,
+                                            onBookClick = {
+                                                onAction(BookListAction.OnBookClick(it))
+                                            },
+                                            scrollState = resultsBookScrollState,
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                        )
+                                    }
                                 }
-
-                            }
-                            1 -> {
-
                             }
                         }
-
+                        1 -> {
+                            if (state.favoriteBooks.isEmpty()) {
+                                Text(
+                                    text = if (LocalInspectionMode.current) "No favorite books" else stringResource(R.string.no_favorite_books),
+                                    textAlign = TextAlign.Center,
+                                    color = MaterialTheme.colorScheme.error,
+                                    style = MaterialTheme.typography.headlineSmall
+                                )
+                            } else {
+                                BookList(
+                                    books = state.favoriteBooks,
+                                    onBookClick = {
+                                        onAction(BookListAction.OnBookClick(it))
+                                    },
+                                    scrollState = favouriteBookScrollState,
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                )
+                            }
+                        }
                     }
                 }
             }

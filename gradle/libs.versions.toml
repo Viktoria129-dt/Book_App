@@ -11,9 +11,10 @@ composeBom = "2024.09.00"
 koin-core = "3.5.0"
 koin-android = "3.5.0"
 koin-androidx-compose = "3.5.0"
-koin-androidx-viewmodel = "2.2.3"
 ui = "1.9.4"
 coil = "2.6.0"
+foundationLayout = "1.9.5"
+uiVersion = "1.9.5"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -33,9 +34,10 @@ androidx-compose-material3 = { group = "androidx.compose.material3", name = "mat
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin-core" }
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin-android" }
 koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin-androidx-compose" }
-koin-androidx-viewmodel = { group = "io.insert-koin", name = "koin-androidx-viewmodel", version.ref = "koin-androidx-viewmodel" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "ui" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
+ui = { group = "androidx.compose.ui", name = "ui", version.ref = "uiVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
