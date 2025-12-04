@@ -74,14 +74,12 @@ fun BookListScreen(state: BookListState, onAction: (BookListAction) -> Unit) {
     val resultsBookScrollState = rememberLazyListState()
     val favouriteBookScrollState = rememberLazyListState()
 
-    // Синхронизация pagerState с selectedTabIndex
+
     LaunchedEffect(state.selectedTabIndex) {
         if (pagerState.currentPage != state.selectedTabIndex) {
             pagerState.animateScrollToPage(state.selectedTabIndex)
         }
     }
-
-    // Обратное обновление - когда пользователь листает pager
     LaunchedEffect(pagerState.currentPage) {
         if (pagerState.currentPage != state.selectedTabIndex) {
             onAction(BookListAction.OnTabSelected(pagerState.currentPage))
