@@ -1,6 +1,7 @@
 package com.example.bookapp.presentation.BookList
 
 import com.example.bookapp.core.presentation.UiText
+import com.example.bookapp.data.dto.SearchedBookDto
 import com.example.bookapp.domain.Book
 
 data class BookListState(
