@@ -1,5 +1,6 @@
 package com.example.bookapp.presentation.BookList.components
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -69,7 +70,8 @@ fun BookSearchBar(
             ),
             keyboardActions = KeyboardActions (
                 onSearch = {
-                    onIamSearch
+                    Log.i("Search","Начался поиск")
+                    onIamSearch()
                 }
             ),
             trailingIcon = {

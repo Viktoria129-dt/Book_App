@@ -43,7 +43,7 @@ private val previewBooks = (1..5).map {
         authors = listOf("Author $it"),
         description = "This is a sample book description for preview purposes.",
         languages = listOf("English"),
-        firstPublishYear = "2020",
+        firstPublishYear = 2020,
         averageRating = 4.2,
         ratingCount = 150,
         numPages = 300,
@@ -60,9 +60,6 @@ private fun BookListScreenPreview() {
                 searchQuery = "Android",
                 searchResults = previewBooks.take(10),
                 favoriteBooks = previewBooks.take(2),
-                selectedTabIndex = 0,
-                isLoading = false,
-                errorMessage = null
             ),
             onAction = {}
         )
@@ -76,11 +73,7 @@ private fun BookListScreenLoadingPreview() {
         BookListScreen(
             state = BookListState(
                 searchQuery = "Kotlin",
-                searchResults = emptyList(),
-                favoriteBooks = emptyList(),
-                selectedTabIndex = 0,
                 isLoading = true,
-                errorMessage = null
             ),
             onAction = {}
         )
@@ -93,12 +86,8 @@ private fun BookListScreenFavoritesPreview() {
     BookAppTheme {
         BookListScreen(
             state = BookListState(
-                searchQuery = "",
-                searchResults = emptyList(),
                 favoriteBooks = previewBooks,
                 selectedTabIndex = 1,
-                isLoading = false,
-                errorMessage = null
             ),
             onAction = {}
         )
@@ -112,11 +101,6 @@ private fun BookListScreenEmptyPreview() {
         BookListScreen(
             state = BookListState(
                 searchQuery = "Unknown Book",
-                searchResults = emptyList(),
-                favoriteBooks = emptyList(),
-                selectedTabIndex = 0,
-                isLoading = false,
-                errorMessage = null
             ),
             onAction = {}
         )

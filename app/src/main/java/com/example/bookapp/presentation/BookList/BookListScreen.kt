@@ -1,6 +1,7 @@
 package com.example.bookapp.presentation.BookList
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,6 +15,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -37,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.bookapp.domain.Book
 import com.example.bookapp.presentation.BookList.components.BookList
+import com.example.bookapp.presentation.BookList.components.BookListItem
 import com.example.bookapp.presentation.BookList.components.BookSearchBar
 import com.example.bookapp.ui.theme.DarkBlue
 import com.example.bookapp.ui.theme.DesertWhite
@@ -74,14 +77,12 @@ fun BookListScreen(state: BookListState, onAction: (BookListAction) -> Unit) {
     val resultsBookScrollState = rememberLazyListState()
     val favouriteBookScrollState = rememberLazyListState()
 
-    // Синхронизация pagerState с selectedTabIndex
+
     LaunchedEffect(state.selectedTabIndex) {
         if (pagerState.currentPage != state.selectedTabIndex) {
             pagerState.animateScrollToPage(state.selectedTabIndex)
         }
     }
-
-    // Обратное обновление - когда пользователь листает pager
     LaunchedEffect(pagerState.currentPage) {
         if (pagerState.currentPage != state.selectedTabIndex) {
             onAction(BookListAction.OnTabSelected(pagerState.currentPage))
@@ -106,6 +107,7 @@ fun BookListScreen(state: BookListState, onAction: (BookListAction) -> Unit) {
             },
             onIamSearch = {
                 keyboardController?.hide()
+                onAction(BookListAction.OnSearchButtonClick)
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -126,7 +128,7 @@ fun BookListScreen(state: BookListState, onAction: (BookListAction) -> Unit) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 TabRow(
-                    selectedTabIndex = pagerState.currentPage, // Используем currentPage из pagerState
+                    selectedTabIndex = pagerState.currentPage,
                     modifier = Modifier
                         .padding(vertical = 12.dp)
                         .fillMaxWidth(),
@@ -185,7 +187,13 @@ fun BookListScreen(state: BookListState, onAction: (BookListAction) -> Unit) {
                     when(pageIndex) {
                         0 -> {
                             if (state.isLoading) {
-                                CircularProgressIndicator()
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ){
+                                    CircularProgressIndicator()
+                                }
+
                             } else {
                                 when {
                                     state.errorMessage != null -> {
