@@ -42,43 +42,23 @@ class BookListViewModel(private val repository: Repository): ViewModel() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true,) }
 
-            try{
-
-                val dtoBooks = repository.searchBooks(query)
-
-                val domainBooks = dtoBooks.map { dto ->
-                    Book(
-                        id = dto.id,
-                        title = dto.title,
-                        authors = dto.authorsNames ?: emptyList(),
-                        imageUrl = if (dto.coverAlternativeKey != null) {
-                            "https://covers.openlibrary.org/b/id/${dto.coverAlternativeKey}-M.jpg"
-                        } else {
-                            null
-                        },
-                        description = null,
-                        languages = dto.language,
-                        firstPublishYear = dto.firstPublishYear,
-                        averageRating = dto.ratingsAverage,
-                        ratingCount = dto.ratingCount,
-                        numPages = dto.numPagesMedian,
-                        numEditions = dto.numEdition
-                    )
-                }
+            try {
+                val books = repository.searchBooks(query)
 
                 _state.update {
                     it.copy(
                         isLoading = false,
-                        searchResults = domainBooks
+                        searchResults = books
                     )
                 }
 
-            }
-            catch (e: Exception){
+            } catch (e: Exception) {
                 _state.update {
                     it.copy(
                         isLoading = false,
-                        errorMessage = UiText.DynamicString("Error: ${e.message}")
+                        errorMessage = UiText.DynamicString(
+                            e.message ?: "Download error"
+                        )
                     )
                 }
             }

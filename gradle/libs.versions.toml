@@ -1,5 +1,5 @@
 [versions]
-agp = "8.9.1"
+agp = "8.13.2"
 kotlin = "2.0.21"
 coreKtx = "1.17.0"
 junit = "4.13.2"
@@ -17,6 +17,12 @@ foundationLayout = "1.9.5"
 uiVersion = "1.9.5"
 ktor = "2.3.5"
 serialization = "1.6.0"
+navigation = "2.7.7"
+lifecycleViewmodelKtx = "2.10.0"
+androidxUi = "1.10.1"
+adsMobileSdk = "0.22.0-beta04"
+foundation = "1.10.1"
+foundationLayoutVersion = "1.10.1"
 
 [libraries]
 ktor-client-android = { group = "io.ktor", name = "ktor-client-android", version.ref = "ktor" }
@@ -44,6 +50,13 @@ androidx-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "ui" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
 ui = { group = "androidx.compose.ui", name = "ui", version.ref = "uiVersion" }
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
+androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
+androidx-compose-ui-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "androidxUi" }
+ads-mobile-sdk = { group = "com.google.android.libraries.ads.mobile.sdk", name = "ads-mobile-sdk", version.ref = "adsMobileSdk" }
+androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
+androidx-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayoutVersion" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

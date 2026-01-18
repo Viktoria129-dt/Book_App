@@ -50,12 +50,12 @@ import org.koin.androidx.compose.koinViewModel
 fun BookListScreenRoot(
     viewModel: BookListViewModel = koinViewModel(),
     onBookClick: (Book) -> Unit
-){
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     BookListScreen(
         state = state,
         onAction = { action ->
-            when(action){
+            when (action) {
                 is BookListAction.OnBookClick -> onBookClick(action.book)
                 else -> viewModel.onAction(action)
             }

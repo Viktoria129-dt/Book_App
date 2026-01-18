@@ -27,7 +27,7 @@ class KtorRemoteBookDataSource {
     suspend fun searchBooks(query: String): List<SearchedBookDto> {
         return try {
             if (query.isBlank()) {
-                Log.d("SEARCH", "🌐 Запрос пустой")
+                Log.d("SEARCH", "🌐 The request is empty")
                 return emptyList()
             }
 
@@ -35,30 +35,40 @@ class KtorRemoteBookDataSource {
             val url = "https://openlibrary.org/search.json?q=$searchQuery&limit=10"
             Log.d("SEARCH", "🌐 URL: $url")
 
-            Log.d("SEARCH", "🌐 Делаю Ktor запрос...")
+            Log.d("SEARCH", "🌐 Ktor request...")
 
             val response = client.get {
                 url(url)
             }
 
-            Log.d("SEARCH", "🌐 Статус ответа: ${response.status}")
+            Log.d("SEARCH", "🌐 Status: ${response.status}")
 
             val searchedResponse: SearchedResponse = response.body()
 
-            Log.d("SEARCH", "🌐 ✅ УСПЕХ! Найдено: ${searchedResponse.results.size}")
+            Log.d("SEARCH", "🌐 ✅ Success! Results: ${searchedResponse.results.size}")
 
             if (searchedResponse.results.isNotEmpty()) {
                 val firstBook = searchedResponse.results[0]
-                Log.d("SEARCH", "🌐 📖 Первая книга: ${firstBook.title}")
+                Log.d("SEARCH", "🌐 📖 first book: ${firstBook.title}")
             }
 
             searchedResponse.results
 
         } catch (e: Exception) {
-            Log.e("SEARCH", "🌐 ❌ ОШИБКА Ktor: ${e.message}")
-            Log.e("SEARCH", "🌐 Тип ошибки: ${e::class.simpleName}")
+            Log.e("SEARCH", "🌐 ❌ ERROR Ktor: ${e.message}")
+            Log.e("SEARCH", "🌐 Type of error: ${e::class.simpleName}")
             e.printStackTrace()
             emptyList()
+        }
+    }
+
+    suspend fun getBookDetails(bookId: String): SearchedBookDto? {
+        val books = searchBooks(bookId)
+        return try {
+            searchBooks(bookId).firstOrNull()
+        } catch (e: Exception) {
+            Log.e("SEARCH", "🌐 ❌ Error getBookDetails: ${e.message}")
+            null
         }
     }
 }
