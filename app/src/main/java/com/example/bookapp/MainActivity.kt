@@ -11,18 +11,23 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.bookapp.presentation.BookDetails.BookDetailsScreen
+import com.example.bookapp.presentation.navigation.BookAppNavigation
 import com.example.bookapp.ui.theme.BookAppTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            }
+            BookAppNavigation()
+        }
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun AppAndroidPreview() {
-    App()
+    BookAppTheme {
+        BookAppNavigation()
+    }
 }
