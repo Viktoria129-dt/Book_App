@@ -1,16 +1,19 @@
 # 📚 Book_App
 
-Book_App is a modern Android application written in Kotlin that allows users to browse and view books using a clean and reactive user interface.  
+Book_App is a modern Android application written in Kotlin that allows users to search, browse, and save books to favorites.  
 The app is built with Jetpack Compose and follows modern Android development practices.
 
 ---
 
 ## 🚀 Features
 
-- 📖 Browse a list of books  
-- 🔍 View detailed information about books  
+- 📖 Search and browse books from a remote API  
+- 🔍 View detailed information about a selected book  
+- ⭐ Add and remove books from favorites  
+- 📂 View favorite books in a separate tab  
 - 🎨 Fully declarative UI with Jetpack Compose  
 - 🌐 Load data from the network  
+- 💾 Local storage using Room  
 - 🧩 Clean and scalable architecture  
 
 ---
@@ -20,7 +23,9 @@ The app is built with Jetpack Compose and follows modern Android development pra
 - **Kotlin** — primary programming language  
 - **Jetpack Compose** — modern declarative UI toolkit  
 - **Ktor** — HTTP client for network requests  
+- **Room** — local database for favorite books  
 - **Koin** — dependency injection framework  
+- **Coroutines & Flow** — asynchronous and reactive programming  
 - **Gradle (Kotlin DSL)** — build configuration  
 - **Android SDK & AndroidX** — core Android libraries  
 
@@ -30,9 +35,12 @@ The app is built with Jetpack Compose and follows modern Android development pra
 
 The application follows a layered architecture:
 
-- **UI layer** — Jetpack Compose screens  
-- **Domain layer** — business logic  
-- **Data layer** — network operations using Ktor  
+- **UI layer** — Jetpack Compose screens (Book list, Book details)  
+- **Presentation layer** — ViewModels with StateFlow  
+- **Domain layer** — core business models  
+- **Data layer**  
+  - Remote data source (Ktor API)  
+  - Local data source (Room database)  
 - **Dependency Injection** — handled with Koin  
 
 ---
