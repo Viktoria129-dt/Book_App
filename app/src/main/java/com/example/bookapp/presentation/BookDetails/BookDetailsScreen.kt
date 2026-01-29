@@ -1,6 +1,5 @@
 package com.example.bookapp.presentation.BookDetails
 
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,24 +28,26 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.example.bookapp.ui.theme.Sandyellow
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
-fun BookDetailsScreen(bookId: String, viewModel: BookDetailsViewModel = koinViewModel(parameters = { parametersOf(bookId) }
-)) {
+fun BookDetailsScreen(bookId: String, viewModel: BookDetailsViewModel = koinViewModel(parameters = { parametersOf(bookId) })) {
     val state by viewModel.state.collectAsState()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(Color(0xFFF1F8FF)) // <-- вот здесь добавлен фон
             .padding(16.dp)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(40.dp))
+
         // Обложка
         state.book?.imageUrl?.let { url ->
             AsyncImage(
@@ -108,7 +111,6 @@ fun BookDetailsScreen(bookId: String, viewModel: BookDetailsViewModel = koinView
 
             Spacer(modifier = Modifier.height(25.dp))
 
-
             Text(
                 text = "Description",
                 style = MaterialTheme.typography.titleLarge,
@@ -117,7 +119,6 @@ fun BookDetailsScreen(bookId: String, viewModel: BookDetailsViewModel = koinView
             )
 
             Spacer(modifier = Modifier.height(25.dp))
-
 
             Box(
                 modifier = Modifier
@@ -148,6 +149,30 @@ fun BookDetailsScreen(bookId: String, viewModel: BookDetailsViewModel = koinView
                     )
                 }
             }
+        }
+        Spacer(
+            modifier = Modifier
+            .height(25.dp)
+        )
+
+        Button(
+            onClick = {
+                state.book?.let { viewModel.toggleFavorite() }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Sandyellow,
+                contentColor = Color.White
+            ),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Text(
+                text = if (state.isFavorite) "Remove from favorites" else "Add to favorites",
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }

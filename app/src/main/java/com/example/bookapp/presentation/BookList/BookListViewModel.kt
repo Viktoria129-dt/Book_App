@@ -6,13 +6,29 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import androidx.lifecycle.viewModelScope
 import com.example.bookapp.core.presentation.UiText
+import com.example.bookapp.data.mapper.toDomain
+import com.example.bookapp.data.repositories.FavoriteBooksRepository
 import com.example.bookapp.data.repositories.Repository
 import com.example.bookapp.domain.Book
 import kotlinx.coroutines.launch
 
-class BookListViewModel(private val repository: Repository): ViewModel() {
+class BookListViewModel(private val repository: Repository, private val favoriteBooksRepository: FavoriteBooksRepository): ViewModel() {
     private val _state = MutableStateFlow(BookListState())
     val state = _state.asStateFlow()
+    init {
+        observeFavorites()
+    }
+
+    private fun observeFavorites() {
+        viewModelScope.launch {
+            favoriteBooksRepository.getFavorites().collect { favorites ->
+                _state.update {
+                    it.copy(favoriteBooks = favorites.map { fb -> fb.toDomain() })
+                }
+            }
+        }
+    }
+
     fun onAction(action: BookListAction){
        when(action){
            is BookListAction.OnBookClick -> {
@@ -24,8 +40,13 @@ class BookListViewModel(private val repository: Repository): ViewModel() {
                }
            }
            is BookListAction.OnTabSelected -> {
-               _state.update {
-                   it.copy(selectedTabIndex = action.index,)
+               _state.update { it.copy(selectedTabIndex = action.index) }
+               if (action.index == 1) { // Favorites
+                   viewModelScope.launch {
+                       favoriteBooksRepository.getFavorites().collect { favorites ->
+                           _state.update { it.copy(favoriteBooks = favorites.map { it.toDomain() }) }
+                       }
+                   }
                }
            }
            is BookListAction.OnSearchButtonClick ->

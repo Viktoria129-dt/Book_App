@@ -8,6 +8,9 @@ import com.example.bookapp.presentation.BookList.BookListViewModel
 import io.ktor.client.HttpClient
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
+import androidx.room.Room
+import com.example.bookapp.data.local.database.AppDataBase
+import com.example.bookapp.data.repositories.FavoriteBooksRepository
 
 val appModule = module {
 
@@ -28,7 +31,8 @@ val appModule = module {
     // Book list
     viewModel {
         BookListViewModel(
-            repository = get()
+            repository = get(),
+            favoriteBooksRepository = get()
         )
     }
 
@@ -36,7 +40,26 @@ val appModule = module {
     viewModel { (bookId: String) ->
         BookDetailsViewModel(
             bookId = bookId,
-            repository = get()
+            repository = get(),
+            favoriteRepository = get()
+        )
+    }
+    single {
+        Room.databaseBuilder(
+            get(),
+            AppDataBase::class.java,
+            "book_database"
+        ).build()
+    }
+
+    single {
+        get<AppDataBase>().favoriteBookDao()
+    }
+
+
+    single {
+        FavoriteBooksRepository(
+            dao = get()
         )
     }
 }
